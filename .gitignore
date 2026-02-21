@@ -1,0 +1,10 @@
+node_modules/
+.next/
+.vercel/
+.env.local
+.env*.local
+*.tsbuildinfo
+next-env.d.ts
+setup-supabase.py
+setup-db.py
+create-table.js

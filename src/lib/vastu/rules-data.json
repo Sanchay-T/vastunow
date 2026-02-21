@@ -1,0 +1,159 @@
+{
+  "rules": [
+    {
+      "id": "kitchen-001",
+      "room_type": "kitchen",
+      "ideal_directions": ["SE"],
+      "acceptable_directions": ["S", "E", "NW"],
+      "bad_directions": ["W", "SW", "CENTER"],
+      "critical_directions": ["NE", "N"],
+      "weight": 9,
+      "remedy": "Place a red or orange light in the SE corner of the kitchen. If kitchen cannot be moved, keep the cooking stove/gas in the SE portion of the kitchen.",
+      "source": "consensus",
+      "description": "Kitchen represents the fire element (Agni). SE is governed by Agni, making it the ideal zone."
+    },
+    {
+      "id": "master_bedroom-001",
+      "room_type": "master_bedroom",
+      "ideal_directions": ["SW"],
+      "acceptable_directions": ["S", "W"],
+      "bad_directions": ["NE", "E", "N"],
+      "critical_directions": ["SE"],
+      "weight": 8,
+      "remedy": "Use earthy tones (yellow, brown, beige) in the bedroom. Place heavy furniture in the SW corner. Avoid mirrors facing the bed.",
+      "source": "consensus",
+      "description": "SW represents earth element and stability. Master bedroom here ensures authority and restful sleep for the head of household."
+    },
+    {
+      "id": "bathroom-001",
+      "room_type": "bathroom",
+      "ideal_directions": ["NW", "W"],
+      "acceptable_directions": ["N", "S"],
+      "bad_directions": ["E", "SE", "SW"],
+      "critical_directions": ["NE", "CENTER"],
+      "weight": 9,
+      "remedy": "Keep bathroom door closed at all times. Place a Vastu pyramid near the bathroom entrance. Use light colors inside.",
+      "source": "consensus",
+      "description": "Bathroom/toilet in NE (the most sacred direction, governed by water/Ishanya) is one of the most severe Vastu defects. NW (Vayu zone) is ideal for drainage."
+    },
+    {
+      "id": "pooja_room-001",
+      "room_type": "pooja_room",
+      "ideal_directions": ["NE"],
+      "acceptable_directions": ["N", "E"],
+      "bad_directions": ["S", "SW", "W", "SE"],
+      "critical_directions": ["NW"],
+      "weight": 7,
+      "remedy": "If pooja room cannot be in NE, create a small altar in the NE corner of the living room or any room. Face east or north while praying.",
+      "source": "consensus",
+      "description": "NE (Ishanya) is considered the most spiritually charged direction, ideal for prayer and meditation."
+    },
+    {
+      "id": "living_room-001",
+      "room_type": "living_room",
+      "ideal_directions": ["N", "NE", "E"],
+      "acceptable_directions": ["NW", "CENTER"],
+      "bad_directions": ["SW", "S"],
+      "critical_directions": [],
+      "weight": 6,
+      "remedy": "Ensure the seating arrangement has guests facing east or north. Add indoor plants in the NE corner of the living room.",
+      "source": "consensus",
+      "description": "Living room benefits from the positive energy flow of northern and eastern light. Center placement is acceptable in larger homes."
+    },
+    {
+      "id": "entrance-001",
+      "room_type": "hall",
+      "ideal_directions": ["N", "NE", "E"],
+      "acceptable_directions": ["NW", "SE"],
+      "bad_directions": ["W", "S"],
+      "critical_directions": ["SW"],
+      "weight": 10,
+      "remedy": "If entrance faces SW, place a bright light above the door. Use a threshold (brass or wooden). Hang a toran or auspicious symbol at the entrance.",
+      "source": "consensus",
+      "description": "Main entrance is the highest-weight Vastu factor. NE entrance invites maximum positive energy. SW entrance is considered the most inauspicious."
+    },
+    {
+      "id": "bedroom-001",
+      "room_type": "bedroom",
+      "ideal_directions": ["S", "SW", "W", "NW"],
+      "acceptable_directions": ["CENTER"],
+      "bad_directions": ["N", "NE", "E"],
+      "critical_directions": ["SE"],
+      "weight": 5,
+      "remedy": "Use calming colors. Place bed so head points south or east. Avoid electronic devices near the bed.",
+      "source": "consensus",
+      "description": "Secondary bedrooms are best in the southern or western zones for restful sleep."
+    },
+    {
+      "id": "study-001",
+      "room_type": "study",
+      "ideal_directions": ["NE", "N", "E", "NW"],
+      "acceptable_directions": ["W"],
+      "bad_directions": ["S", "SW", "SE"],
+      "critical_directions": [],
+      "weight": 5,
+      "remedy": "Face east or north while studying/working. Place a globe or crystal in the NE corner.",
+      "source": "consensus",
+      "description": "NE and N zones enhance concentration, clarity, and wisdom."
+    },
+    {
+      "id": "dining_room-001",
+      "room_type": "dining_room",
+      "ideal_directions": ["W", "E"],
+      "acceptable_directions": ["N", "S", "CENTER"],
+      "bad_directions": ["NE", "SW"],
+      "critical_directions": [],
+      "weight": 4,
+      "remedy": "Use warm colors. Place a mirror on the east wall to reflect the dining table (symbolizes abundance).",
+      "source": "consensus",
+      "description": "Dining room does best in western or eastern zones. Should ideally be adjacent to or near the kitchen."
+    },
+    {
+      "id": "balcony-001",
+      "room_type": "balcony",
+      "ideal_directions": ["N", "NE", "E"],
+      "acceptable_directions": ["NW", "SE"],
+      "bad_directions": ["SW"],
+      "critical_directions": [],
+      "weight": 3,
+      "remedy": "Place plants on northern and eastern balconies. Keep balcony clean and uncluttered.",
+      "source": "consensus",
+      "description": "Open spaces in N/NE/E allow positive energy and morning sunlight to enter."
+    },
+    {
+      "id": "storage-001",
+      "room_type": "storage",
+      "ideal_directions": ["SW", "S", "W", "NW"],
+      "acceptable_directions": ["CENTER"],
+      "bad_directions": ["NE", "N", "E"],
+      "critical_directions": [],
+      "weight": 3,
+      "remedy": "Keep heavy items in SW storage. NE storage should be kept minimal and light.",
+      "source": "consensus",
+      "description": "Heavy storage items align with the earth element of SW. NE should remain light and open."
+    },
+    {
+      "id": "drawing_room-001",
+      "room_type": "drawing_room",
+      "ideal_directions": ["N", "NE", "E"],
+      "acceptable_directions": ["NW", "CENTER"],
+      "bad_directions": ["SW", "S"],
+      "critical_directions": [],
+      "weight": 5,
+      "remedy": "Keep the drawing room well-lit and clutter-free. Place seating so guests face north or east.",
+      "source": "consensus",
+      "description": "Drawing room (formal living area) follows the same principles as living room. N/NE/E zones welcome positive social energy."
+    }
+  ],
+  "direction_metadata": {
+    "N":      { "element": "Water",       "deity": "Kubera",            "governs": "Wealth & Opportunities" },
+    "NE":     { "element": "Water/Ether", "deity": "Ishanya (Shiva)",   "governs": "Spirituality & Clarity" },
+    "E":      { "element": "Fire/Light",  "deity": "Indra/Surya",       "governs": "Social connections & Growth" },
+    "SE":     { "element": "Fire",        "deity": "Agni",              "governs": "Energy & Cash Flow" },
+    "S":      { "element": "Earth/Fire",  "deity": "Yama",              "governs": "Fame & Relaxation" },
+    "SW":     { "element": "Earth",       "deity": "Pitru/Nairutya",    "governs": "Relationships & Stability" },
+    "W":      { "element": "Air/Space",   "deity": "Varuna",            "governs": "Gains & Profits" },
+    "NW":     { "element": "Air",         "deity": "Vayu",              "governs": "Support & Networking" },
+    "CENTER": { "element": "Ether/Space", "deity": "Brahma",            "governs": "Overall Balance" }
+  }
+}
