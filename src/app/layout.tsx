@@ -1,10 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Montserrat, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import ClientProviders from "./providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const montserrat = Montserrat({
+  variable: "--font-body",
+  subsets: ["latin"],
+});
+
+const playfairDisplay = Playfair_Display({
+  variable: "--font-heading",
   subsets: ["latin"],
 });
 
@@ -15,8 +20,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "VastuNow — Free Vastu Analysis for Your Floor Plan",
-  description: "Upload your floor plan, get an instant Vastu Shastra score and detailed analysis with remedies. Completely free.",
+  title: "My Vaastu Pandit — Free Vaastu Analysis for Your Floor Plan",
+  description: "Upload your floor plan, get an instant Vaastu Shastra score and detailed analysis with remedies. Analyse. Remedy. Prosper.",
   manifest: "/manifest.json",
 };
 
@@ -27,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}>
+      <body className={`${montserrat.variable} ${playfairDisplay.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}>
         <ClientProviders>
           {children}
         </ClientProviders>

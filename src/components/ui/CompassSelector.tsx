@@ -184,7 +184,7 @@ export default function CompassSelector({ value, onChange, imageFile }: CompassS
             <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 200 200">
               {TICK_MARKS.map(({ dir, x1, y1, x2, y2, isCardinal }) => (
                 <line key={dir} x1={x1} y1={y1} x2={x2} y2={y2}
-                  stroke={isCardinal ? '#c2410c' : '#d6d3d1'} strokeWidth={isCardinal ? 2 : 1} opacity={0.5} />
+                  stroke={isCardinal ? '#6E1126' : '#d6d3d1'} strokeWidth={isCardinal ? 2 : 1} opacity={0.5} />
               ))}
             </svg>
 

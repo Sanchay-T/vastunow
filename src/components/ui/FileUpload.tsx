@@ -119,22 +119,24 @@ export default function FileUpload({ onFileSelect, selectedFile, onClear }: File
 
   if (selectedFile) {
     return (
-      <div className="w-full border-2 border-[var(--primary)] border-dashed rounded-xl p-4 sm:p-6 bg-orange-50/50">
+      <div className="w-full rounded-xl p-4 sm:p-5 bg-[var(--primary)]/5 border border-[var(--primary)]/15">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-3 min-w-0">
-            {getFileIcon()}
+            <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-sm border border-[var(--border)]">
+              {getFileIcon()}
+            </div>
             <div className="min-w-0">
-              <p className="font-medium text-[var(--foreground)] text-sm sm:text-base truncate">{selectedFile.name}</p>
-              <p className="text-xs sm:text-sm text-gray-500">
+              <p className="font-semibold text-[var(--foreground)] text-sm sm:text-base truncate">{selectedFile.name}</p>
+              <p className="text-xs text-[var(--foreground)]/50">
                 {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
               </p>
             </div>
           </div>
           <button
             onClick={onClear}
-            className="p-2.5 hover:bg-gray-100 rounded-full transition-colors shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center"
+            className="p-2.5 hover:bg-white rounded-full transition-colors shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-5 h-5 text-[var(--foreground)]/40" />
           </button>
         </div>
       </div>
@@ -144,11 +146,20 @@ export default function FileUpload({ onFileSelect, selectedFile, onClear }: File
   return (
     <div>
       <div
-        className={`w-full border-2 border-dashed rounded-xl p-6 sm:p-10 text-center cursor-pointer transition-all duration-200 ${
+        className={`w-full rounded-xl text-center cursor-pointer transition-all duration-300 ${
           dragActive
-            ? 'border-[var(--primary)] bg-orange-50/50 scale-[1.01]'
-            : 'border-[var(--border)] hover:border-[var(--primary)] hover:bg-orange-50/30'
+            ? 'scale-[1.01]'
+            : ''
         }`}
+        style={{
+          background: dragActive
+            ? 'linear-gradient(135deg, rgba(110,17,38,0.06) 0%, rgba(234,156,51,0.06) 100%)'
+            : 'linear-gradient(135deg, rgba(110,17,38,0.03) 0%, rgba(234,156,51,0.03) 100%)',
+          border: dragActive
+            ? '2px solid var(--primary)'
+            : '2px dashed var(--border)',
+          padding: '2rem 1.5rem',
+        }}
         onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
         onDragLeave={() => setDragActive(false)}
         onDrop={handleDrop}
@@ -160,19 +171,25 @@ export default function FileUpload({ onFileSelect, selectedFile, onClear }: File
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            <p className="text-sm font-medium text-stone-600">Optimizing image...</p>
+            <p className="text-sm font-medium text-[var(--foreground)]/60">Optimizing image...</p>
           </>
         ) : (
           <>
-            <Upload className="w-8 h-8 sm:w-10 sm:h-10 text-[var(--primary)] mx-auto mb-3" />
-            <p className="text-sm sm:text-base font-medium text-[var(--foreground)] mb-1">
+            {/* Upload icon */}
+            <div
+              className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
+              style={{ background: 'linear-gradient(135deg, var(--primary), var(--primary-light))' }}
+            >
+              <Upload className="w-5 h-5 text-white" />
+            </div>
+            <p className="text-sm font-semibold text-[var(--foreground)] mb-0.5">
               {t('drag_drop')}
             </p>
-            <p className="text-xs sm:text-sm text-gray-500 mb-3">{t('or')}</p>
-            <span className="text-[var(--primary)] font-medium hover:underline text-sm sm:text-base">
+            <p className="text-xs text-[var(--foreground)]/40 mb-3">{t('or')}</p>
+            <span className="inline-block text-[var(--primary)] bg-white hover:bg-[var(--background)] font-medium px-5 py-2 rounded-lg text-sm transition-colors border border-[var(--primary)]/20 shadow-sm">
               {t('browse_files')}
             </span>
-            <p className="text-xs text-gray-400 mt-3">
+            <p className="text-[10px] text-[var(--foreground)]/30 mt-3">
               {t('accepted_formats')} &middot; {t('max_file_size')}
             </p>
           </>
@@ -186,7 +203,7 @@ export default function FileUpload({ onFileSelect, selectedFile, onClear }: File
         onChange={handleChange}
       />
       {error && (
-        <p className="mt-2 text-sm text-red-600">{error}</p>
+        <p className="mt-2 text-sm text-[var(--coral)]">{error}</p>
       )}
     </div>
   );

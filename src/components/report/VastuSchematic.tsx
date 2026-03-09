@@ -99,20 +99,20 @@ export default function VastuSchematic({ rooms, scores, entrance }: SchematicPro
 
       {/* North arrow */}
       <g transform={`translate(${svgWidth / 2}, 18)`}>
-        <polygon points="0,-12 -6,4 6,4" fill="#1e3a5f" />
-        <text textAnchor="middle" y="-14" fontSize="11" fontWeight="bold" fill="#1e3a5f">N</text>
+        <polygon points="0,-12 -6,4 6,4" fill="#283171" />
+        <text textAnchor="middle" y="-14" fontSize="11" fontWeight="bold" fill="#283171">N</text>
       </g>
 
       {/* Decorative double-line frame */}
       <rect
         x={gridX - frameGap} y={gridY - frameGap}
         width={gridSize + frameGap * 2} height={gridSize + frameGap * 2}
-        rx={12} fill="none" stroke="#c2410c" strokeWidth={1.5} opacity={0.3}
+        rx={12} fill="none" stroke="#6E1126" strokeWidth={1.5} opacity={0.3}
       />
       <rect
         x={gridX - frameGap - 4} y={gridY - frameGap - 4}
         width={gridSize + frameGap * 2 + 8} height={gridSize + frameGap * 2 + 8}
-        rx={14} fill="none" stroke="#c2410c" strokeWidth={0.75} opacity={0.15}
+        rx={14} fill="none" stroke="#6E1126" strokeWidth={0.75} opacity={0.15}
       />
 
       {/* Grid */}
@@ -180,8 +180,8 @@ export default function VastuSchematic({ rooms, scores, entrance }: SchematicPro
               {/* Entrance marker */}
               {entrance && entrance.compass_direction === dir && (
                 <g transform={`translate(${x + cellSize - 18}, ${y + 12})`}>
-                  <circle cx="0" cy="0" r="8" fill="#c2410c" opacity={0.2} className="entrance-pulse" />
-                  <circle cx="0" cy="0" r="6" fill="#c2410c" />
+                  <circle cx="0" cy="0" r="8" fill="#6E1126" opacity={0.2} className="entrance-pulse" />
+                  <circle cx="0" cy="0" r="6" fill="#6E1126" />
                   <text x="0" y="3.5" textAnchor="middle" fontSize="7" fill="white" fontWeight="bold">D</text>
                 </g>
               )}

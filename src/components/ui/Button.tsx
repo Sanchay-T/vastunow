@@ -22,7 +22,7 @@ export default function Button({
 
   const variants = {
     primary: 'bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white focus:ring-[var(--primary)]',
-    secondary: 'bg-[var(--secondary)] hover:bg-[#2a4d7a] text-white focus:ring-[var(--secondary)]',
+    secondary: 'bg-[var(--secondary)] hover:bg-[#1e2860] text-white focus:ring-[var(--secondary)]',
     outline: 'border-2 border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white focus:ring-[var(--primary)]',
     ghost: 'text-[var(--foreground)] hover:bg-gray-100 focus:ring-gray-300'
   };

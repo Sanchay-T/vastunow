@@ -1,16 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --primary: #c2410c;
-  --primary-light: #ea580c;
-  --secondary: #1e3a5f;
-  --background: #faf9f6;
-  --foreground: #1c1917;
+  --primary: #6E1126;
+  --primary-light: #8a1a33;
+  --secondary: #283171;
+  --background: #F3EFE6;
+  --foreground: #2d2926;
+  --accent: #714B9D;
+  --gold: #EA9C33;
+  --coral: #EE4731;
   --score-good: #22c55e;
   --score-attention: #f59e0b;
   --score-problem: #ef4444;
   --card-bg: #ffffff;
-  --border: #e5e2de;
+  --border: #e0dbd4;
 }
 
 @theme inline {
@@ -19,24 +22,33 @@
   --color-primary: var(--primary);
   --color-primary-light: var(--primary-light);
   --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-gold: var(--gold);
+  --color-coral: var(--coral);
   --color-score-good: var(--score-good);
   --color-score-attention: var(--score-attention);
   --color-score-problem: var(--score-problem);
   --color-card-bg: var(--card-bg);
   --color-border: var(--border);
-  --font-sans: var(--font-geist-sans);
-  --font-serif: 'Georgia', 'Cambria', serif;
+  --font-sans: var(--font-body), 'Montserrat', sans-serif;
+  --font-serif: var(--font-heading), 'Playfair Display', serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), 'Montserrat', Arial, Helvetica, sans-serif;
 }
 
 /* Subtle mandala background pattern */
 .mandala-bg {
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c2410c' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3Ccircle cx='30' cy='30' r='10'/%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236E1126' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3Ccircle cx='30' cy='30' r='10'/%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Sacred geometry pattern for hero */
+.sacred-pattern {
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%236E1126' stroke-opacity='0.04' stroke-width='0.5'%3E%3Ccircle cx='40' cy='40' r='35'/%3E%3Ccircle cx='40' cy='40' r='25'/%3E%3Ccircle cx='40' cy='40' r='15'/%3E%3Cline x1='40' y1='5' x2='40' y2='75'/%3E%3Cline x1='5' y1='40' x2='75' y2='40'/%3E%3Cline x1='12' y1='12' x2='68' y2='68'/%3E%3Cline x1='68' y1='12' x2='12' y2='68'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 /* Score color classes */
@@ -47,6 +59,52 @@ body {
 .bg-score-attention { background-color: var(--score-attention); }
 .bg-score-problem { background-color: var(--score-problem); }
 
+/* Gold shimmer animation */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.gold-shimmer {
+  background: linear-gradient(90deg, var(--gold) 0%, #f5c563 40%, var(--gold) 60%, #f5c563 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+/* Scrolling border strip marquee */
+@keyframes scroll-border {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.border-marquee {
+  overflow: hidden;
+  width: 100%;
+}
+.border-marquee-inner {
+  display: flex;
+  width: max-content;
+  animation: scroll-border 30s linear infinite;
+}
+.border-marquee-inner img {
+  flex-shrink: 0;
+}
+
+/* Decorative border ornament */
+.ornament-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ornament-divider::before,
+.ornament-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
 /* Range slider touch-friendly thumb */
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -54,7 +112,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #c2410c;
+  background: #6E1126;
   cursor: pointer;
   border: 3px solid white;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
@@ -64,13 +122,12 @@ input[type="range"]::-moz-range-thumb {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #c2410c;
+  background: #6E1126;
   cursor: pointer;
   border: 3px solid white;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Ensure the slider track is tall enough for easy touch */
 input[type="range"]::-webkit-slider-runnable-track {
   height: 8px;
   border-radius: 4px;

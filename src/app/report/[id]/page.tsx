@@ -132,7 +132,7 @@ export default function ReportPage() {
         {/* Report header — editorial style */}
         <header className="text-center mb-10 sm:mb-12">
           <p className="text-[11px] text-stone-400 tracking-[0.2em] uppercase mb-3">
-            Vastu Compliance Report
+            Vaastu Compliance Report
           </p>
           <h1
             className="text-2xl sm:text-3xl font-bold text-[var(--secondary)] leading-tight"
@@ -231,7 +231,7 @@ export default function ReportPage() {
             {/* Primary: Download PDF */}
             <button
               onClick={() => window.open(`/api/report-pdf?id=${result.id}`, '_blank')}
-              className="flex-1 min-w-[140px] flex items-center justify-center gap-2 bg-[var(--secondary)] hover:bg-[#2a4d7a] text-white font-medium text-sm py-3 px-4 sm:px-5 rounded-lg transition-colors min-h-[48px]"
+              className="flex-1 min-w-[140px] flex items-center justify-center gap-2 bg-[var(--secondary)] hover:bg-[#1e2860] text-white font-medium text-sm py-3 px-4 sm:px-5 rounded-lg transition-colors min-h-[48px]"
             >
               <Download className="w-4 h-4 flex-shrink-0" />
               <span className="truncate">{t('download_pdf')}</span>

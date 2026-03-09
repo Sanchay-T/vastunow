@@ -1,51 +1,86 @@
 'use client';
 
+import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
+import { Upload, Search, FileCheck, ArrowRight } from 'lucide-react';
 
 export default function HowItWorks() {
   const { t } = useTranslation();
 
   const steps = [
-    { num: '1', title: t('step_1_title'), desc: t('step_1_desc') },
-    { num: '2', title: t('step_2_title'), desc: t('step_2_desc') },
-    { num: '3', title: t('step_3_title'), desc: t('step_3_desc') },
+    { num: '1', title: t('step_1_title'), desc: t('step_1_desc'), icon: Upload, gradient: 'from-[#6E1126] to-[#8a1a33]' },
+    { num: '2', title: t('step_2_title'), desc: t('step_2_desc'), icon: Search, gradient: 'from-[#714B9D] to-[#8b65b5]' },
+    { num: '3', title: t('step_3_title'), desc: t('step_3_desc'), icon: FileCheck, gradient: 'from-[#283171] to-[#3a4590]' },
   ];
 
   return (
-    <section className="py-12 sm:py-16">
-      <p className="text-[11px] text-stone-400 tracking-[0.15em] uppercase text-center mb-2">
-        How It Works
-      </p>
-      <h2
-        className="text-xl sm:text-2xl font-bold text-center text-[var(--secondary)] mb-8 sm:mb-12"
-        style={{ fontFamily: 'var(--font-serif)' }}
-      >
-        Three simple steps
-      </h2>
+    <section className="py-16 sm:py-24 relative">
+      {/* Section header */}
+      <div className="text-center mb-14 sm:mb-18 relative">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-[var(--gold)]" />
+          <Image
+            src="/images/compass-gold.png"
+            alt=""
+            width={24}
+            height={24}
+            className="w-5 h-5 opacity-60"
+          />
+          <div className="h-px w-10 sm:w-16 bg-gradient-to-l from-transparent to-[var(--gold)]" />
+        </div>
+        <h2
+          className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--primary)] mb-2"
+          style={{ fontFamily: 'var(--font-serif)' }}
+        >
+          How It Works
+        </h2>
+        <p className="text-sm text-[var(--foreground)]/50">Three simple steps to your Vaastu analysis</p>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 max-w-2xl md:max-w-none mx-auto">
-        {steps.map((step, i) => (
-          <div key={i} className="relative">
-            {/* Connector line — only on desktop, between items */}
-            {i < steps.length - 1 && (
-              <div className="hidden md:block absolute top-5 left-[calc(50%+20px)] right-[calc(-50%+20px)] h-px bg-stone-200" />
-            )}
+      {/* Steps */}
+      <div className="max-w-4xl mx-auto relative">
+        {/* Connector line behind cards - desktop */}
+        <div className="hidden md:block absolute top-[52px] left-[16.67%] right-[16.67%] h-0.5 bg-gradient-to-r from-[var(--primary)]/20 via-[var(--accent)]/20 to-[var(--secondary)]/20" />
 
-            <div className="text-center relative">
-              {/* Step number */}
-              <div className="w-10 h-10 rounded-full border-2 border-[var(--primary)] flex items-center justify-center mx-auto mb-4">
-                <span className="text-sm font-bold text-[var(--primary)]">{step.num}</span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-6">
+          {steps.map((step, i) => {
+            const Icon = step.icon;
+            return (
+              <div key={i} className="relative group">
+                <div className="flex flex-col items-center text-center">
+                  {/* Number + Icon circle */}
+                  <div className="relative mb-6">
+                    <div className={`w-[104px] h-[104px] rounded-full bg-gradient-to-br ${step.gradient} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300`}>
+                      <Icon className="w-10 h-10 text-white" strokeWidth={1.5} />
+                    </div>
+                    {/* Step number badge */}
+                    <div className="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-[var(--gold)] text-white text-sm font-bold flex items-center justify-center shadow-md border-2 border-white">
+                      {step.num}
+                    </div>
+                  </div>
+
+                  {/* Arrow between steps - mobile */}
+                  {i < steps.length - 1 && (
+                    <div className="md:hidden my-1 mb-5">
+                      <ArrowRight className="w-5 h-5 text-[var(--gold)] rotate-90" />
+                    </div>
+                  )}
+
+                  {/* Content */}
+                  <h3
+                    className="font-bold text-[var(--secondary)] mb-2 text-lg"
+                    style={{ fontFamily: 'var(--font-serif)' }}
+                  >
+                    {step.title}
+                  </h3>
+                  <p className="text-sm text-[var(--foreground)]/55 leading-relaxed max-w-[240px]">
+                    {step.desc}
+                  </p>
+                </div>
               </div>
-
-              <h3 className="font-semibold text-[var(--secondary)] mb-1.5 text-sm sm:text-base">
-                {step.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-stone-500 leading-relaxed max-w-[220px] mx-auto">
-                {step.desc}
-              </p>
-            </div>
-          </div>
-        ))}
+            );
+          })}
+        </div>
       </div>
     </section>
   );

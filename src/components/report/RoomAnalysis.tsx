@@ -18,7 +18,7 @@ interface RoomAnalysisProps {
 function getScoreColor(score: number) {
   if (score >= 80) return { color: '#16a34a', bg: '#f0fdf4', label: 'Well Placed' };
   if (score >= 50) return { color: '#d97706', bg: '#fffbeb', label: 'Needs Attention' };
-  return { color: '#dc2626', bg: '#fef2f2', label: 'Vastu Dosha' };
+  return { color: '#dc2626', bg: '#fef2f2', label: 'Vaastu Dosha' };
 }
 
 function ScoreArc({ score, size = 48 }: { score: number; size?: number }) {

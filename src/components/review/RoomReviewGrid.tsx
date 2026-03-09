@@ -100,14 +100,14 @@ export default function RoomReviewGrid({ rooms, imageUrl, onRoomChange }: RoomRe
               }}
               className={`flex items-center gap-1.5 px-2.5 py-2 rounded-full shadow-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 min-h-[44px] ${
                 isActive
-                  ? 'bg-[#c2410c] text-white scale-110'
+                  ? 'bg-[#6E1126] text-white scale-110'
                   : 'bg-white/95 text-stone-800 hover:bg-white hover:scale-105'
               }`}
               style={{ backdropFilter: 'blur(4px)' }}
             >
-              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isActive ? 'bg-white' : 'bg-[#c2410c]'}`} />
+              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isActive ? 'bg-white' : 'bg-[#6E1126]'}`} />
               {room.name}
-              <span className={`text-[10px] font-bold ${isActive ? 'text-white/70' : 'text-[#c2410c]'}`}>
+              <span className={`text-[10px] font-bold ${isActive ? 'text-white/70' : 'text-[#6E1126]'}`}>
                 {room.compass_direction}
               </span>
             </button>
@@ -133,7 +133,7 @@ export default function RoomReviewGrid({ rooms, imageUrl, onRoomChange }: RoomRe
                 <div className="relative">
                   {/* Header */}
                   <div className="flex items-center justify-between mb-2">
-                    <span className="bg-[#c2410c] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    <span className="bg-[#6E1126] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                       {room.compass_direction}
                     </span>
                     <button
@@ -150,7 +150,7 @@ export default function RoomReviewGrid({ rooms, imageUrl, onRoomChange }: RoomRe
                     type="text"
                     value={room.name}
                     onChange={(e) => onRoomChange(i, 'name', e.target.value)}
-                    className="w-full px-2.5 py-2.5 text-sm border border-gray-200 rounded-lg mb-2 focus:ring-2 focus:ring-[#c2410c] focus:border-transparent min-h-[44px]"
+                    className="w-full px-2.5 py-2.5 text-sm border border-gray-200 rounded-lg mb-2 focus:ring-2 focus:ring-[#6E1126] focus:border-transparent min-h-[44px]"
                   />
 
                   {/* Type select */}
@@ -158,7 +158,7 @@ export default function RoomReviewGrid({ rooms, imageUrl, onRoomChange }: RoomRe
                   <select
                     value={room.type}
                     onChange={(e) => onRoomChange(i, 'type', e.target.value)}
-                    className="w-full px-2.5 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#c2410c] focus:border-transparent min-h-[44px]"
+                    className="w-full px-2.5 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#6E1126] focus:border-transparent min-h-[44px]"
                   >
                     {ROOM_TYPES.map(type => (
                       <option key={type} value={type}>

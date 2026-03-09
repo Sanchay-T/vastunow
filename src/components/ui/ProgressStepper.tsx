@@ -24,9 +24,9 @@ export default function ProgressStepper({ currentStep }: ProgressStepperProps) {
               <div
                 className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold transition-colors flex-shrink-0 ${
                   isCompleted
-                    ? 'bg-[#c2410c] text-white'
+                    ? 'bg-[#6E1126] text-white'
                     : isActive
-                    ? 'bg-[#c2410c] text-white ring-4 ring-[#c2410c]/20'
+                    ? 'bg-[#6E1126] text-white ring-4 ring-[#6E1126]/20'
                     : 'bg-gray-200 text-gray-500'
                 }`}
               >
@@ -34,7 +34,7 @@ export default function ProgressStepper({ currentStep }: ProgressStepperProps) {
               </div>
               <span
                 className={`text-[10px] sm:text-xs mt-1 sm:mt-1.5 font-medium truncate max-w-[60px] text-center ${
-                  isPending ? 'text-gray-400' : 'text-[#1e3a5f]'
+                  isPending ? 'text-gray-400' : 'text-[#283171]'
                 }`}
               >
                 {label}
@@ -46,7 +46,7 @@ export default function ProgressStepper({ currentStep }: ProgressStepperProps) {
               <div className="flex-1 h-0.5 mx-1.5 sm:mx-2 mb-5">
                 <div
                   className={`h-full rounded-full transition-colors ${
-                    stepNum < currentStep ? 'bg-[#c2410c]' : 'bg-gray-200'
+                    stepNum < currentStep ? 'bg-[#6E1126]' : 'bg-gray-200'
                   }`}
                 />
               </div>
