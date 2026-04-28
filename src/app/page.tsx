@@ -71,7 +71,7 @@ export default function LandingPage() {
                 ].map(({ icon: Icon, label, color }) => (
                   <div
                     key={label}
-                    className="group flex items-center gap-1.5 backdrop-blur-sm border rounded-full pl-1.5 pr-3 py-1 hover:shadow-sm transition-all bg-white/70 hover:bg-white"
+                    className="group flex items-center gap-1.5 backdrop-blur-sm border rounded-full pl-1.5 pr-3 py-1 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 bg-white/70 hover:bg-white"
                     style={{
                       borderColor: `color-mix(in srgb, ${color} 35%, transparent)`,
                     }}
