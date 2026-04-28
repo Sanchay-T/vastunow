@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { analyzeVastu } from '@/lib/vastu/scoring';
 import { generateReport } from '@/lib/llm/generate-report';
 import { matchUnknownRoomType } from '@/lib/vastu/rule-matcher';
+import { createCostSummary, addUsage, type CostSummary } from '@/lib/llm/cost-tracker';
 import { supabase } from '@/lib/supabase/client';
 import type { ParsedFloorPlan } from '@/lib/llm/parse-floorplan';
 import { randomUUID } from 'crypto';
@@ -39,9 +40,16 @@ export async function POST(req: NextRequest) {
   const log = (step: string, data?: Record<string, unknown>) =>
     console.log(`[SCORE] ${step}`, data ? JSON.stringify(data) : '');
 
+  const costs = createCostSummary();
+
   try {
     const body = await req.json();
-    const { parsed_floorplan, image_url, facing_direction, language, user_corrections } = body;
+    const { parsed_floorplan, image_url, facing_direction, language, user_corrections, phase1_cost } = body;
+
+    // Include phase 1 cost if passed from the frontend
+    if (phase1_cost) {
+      addUsage(costs, phase1_cost);
+    }
 
     log('1_RECEIVED', {
       facing_direction,
@@ -70,8 +78,10 @@ export async function POST(req: NextRequest) {
     for (const room of finalPlan.rooms) {
       if (room.type === 'unknown' || !isKnownType(room.type)) {
         const originalType = room.type;
-        room.type = await matchUnknownRoomType(room.name, room.type);
-        log('3_RULE_MATCH', { roomName: room.name, from: originalType, to: room.type });
+        const { result: matchedType, usage } = await matchUnknownRoomType(room.name, room.type);
+        room.type = matchedType;
+        addUsage(costs, usage);
+        log('3_RULE_MATCH', { roomName: room.name, from: originalType, to: room.type, cost_usd: usage.cost_usd });
       }
     }
 
@@ -96,12 +106,22 @@ export async function POST(req: NextRequest) {
     // 4. Generate report
     let reportContent;
     try {
-      reportContent = await generateReport(vastuAnalysis, language || 'English');
-      log('5_REPORT_OK', { latencyMs: Date.now() - t0, language: language || 'English' });
+      const { result, usage } = await generateReport(vastuAnalysis, language || 'English');
+      reportContent = result;
+      addUsage(costs, usage);
+      log('5_REPORT_OK', { latencyMs: Date.now() - t0, language: language || 'English', cost_usd: usage.cost_usd });
     } catch (reportError) {
       log('5_REPORT_FAIL', { error: String(reportError) });
       reportContent = null;
     }
+
+    log('5_COST_SUMMARY', {
+      total_cost_usd: costs.total_cost_usd,
+      total_input_tokens: costs.total_input_tokens,
+      total_output_tokens: costs.total_output_tokens,
+      call_count: costs.calls.length,
+      breakdown: costs.calls.map(c => ({ model: c.model, cost: c.cost_usd })),
+    });
 
     // 5. Store in Supabase
     let analysisId = randomUUID();
@@ -119,7 +139,9 @@ export async function POST(req: NextRequest) {
           grade: vastuAnalysis.grade,
           report_content: reportContent,
           report_language: language || 'en',
-          ip_hash: req.headers.get('x-forwarded-for') || 'unknown'
+          ip_hash: req.headers.get('x-forwarded-for') || 'unknown',
+          cost_usd: costs.total_cost_usd,
+          cost_breakdown: costs,
         })
         .select()
         .single();
@@ -140,6 +162,7 @@ export async function POST(req: NextRequest) {
       grade: vastuAnalysis.grade,
       facing_in_schematic: facing_direction,
       totalLatencyMs: Date.now() - t0,
+      total_cost_usd: costs.total_cost_usd,
     });
 
     return NextResponse.json({
@@ -157,7 +180,8 @@ export async function POST(req: NextRequest) {
         entrance: finalPlan.entrance,
         facing: facing_direction,
         scores: vastuAnalysis.room_scores
-      }
+      },
+      cost: costs,
     });
 
   } catch (error) {

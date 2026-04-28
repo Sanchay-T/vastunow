@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, SkipForward } from 'lucide-react';
-import type { ParsedFloorPlan } from '@/lib/llm/parse-floorplan';
+import type { ParsedFloorPlan, ParsedRoom, Direction } from '@/lib/llm/parse-floorplan';
 import RoomReviewGrid from '@/components/review/RoomReviewGrid';
 import EntranceConfirm from '@/components/review/EntranceConfirm';
 import ProgressStepper from '@/components/ui/ProgressStepper';
@@ -42,20 +42,53 @@ export default function ReviewPage() {
     });
   };
 
+  const handleRoomReposition = (index: number, posXPct: number, posYPct: number) => {
+    setRooms(prev => {
+      const updated = [...prev];
+      const r = updated[index];
+      if (!r) return prev;
+      const COMPASS_GRID: Direction[][] = [
+        ['NW', 'N', 'NE'],
+        ['W', 'CENTER', 'E'],
+        ['SW', 'S', 'SE'],
+      ];
+      const col = posXPct < 33.333 ? 0 : posXPct < 66.666 ? 1 : 2;
+      const row = posYPct < 33.333 ? 0 : posYPct < 66.666 ? 1 : 2;
+      const next = {
+        ...r,
+        pos_x_pct: posXPct,
+        pos_y_pct: posYPct,
+        grid_row: row,
+        grid_col: col,
+        compass_direction: COMPASS_GRID[row][col],
+      };
+      if (r.bbox) {
+        next.bbox = { ...r.bbox, x: posXPct - r.bbox.w / 2, y: posYPct - r.bbox.h / 2 };
+      }
+      updated[index] = next;
+      return updated;
+    });
+  };
+
+  const handleAddRoom = (room: ParsedRoom) => {
+    setRooms(prev => [...prev, room]);
+  };
+
+  const handleDeleteRoom = (index: number) => {
+    setRooms(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleScore = async (skipReview = false) => {
     if (!data) return;
     setLoading(true);
     setLoadingStep(1);
 
     try {
-      const corrections = skipReview ? undefined : {
-        rooms: rooms.map((room, i) => {
-          const original = data.parsed_floorplan.rooms[i];
-          if (room.name !== original.name || room.type !== original.type) {
-            return { index: i, name: room.name, type: room.type };
-          }
-          return null;
-        }).filter(Boolean)
+      const finalRooms = skipReview ? data.parsed_floorplan.rooms : rooms;
+      const finalPlan = {
+        ...data.parsed_floorplan,
+        rooms: finalRooms,
+        total_rooms: finalRooms.length,
       };
 
       setLoadingStep(2);
@@ -65,11 +98,10 @@ export default function ReviewPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          parsed_floorplan: data.parsed_floorplan,
+          parsed_floorplan: finalPlan,
           image_url: data.image_url,
           facing_direction: data.facing_direction,
           language: languageMap[i18n.language] || 'English',
-          user_corrections: corrections && corrections.rooms && corrections.rooms.length > 0 ? corrections : undefined
         })
       });
 
@@ -155,6 +187,9 @@ export default function ReviewPage() {
             rooms={rooms}
             imageUrl={data.image_url}
             onRoomChange={handleRoomChange}
+            onRoomReposition={handleRoomReposition}
+            onAddRoom={handleAddRoom}
+            onDeleteRoom={handleDeleteRoom}
           />
         </div>
 

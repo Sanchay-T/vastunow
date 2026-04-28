@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Call Claude Sonnet
-    const parsedPlan = await parseFloorPlan(base64, facingDirection, isPdf);
+    const { result: parsedPlan, usage } = await parseFloorPlan(base64, facingDirection, isPdf);
     const t1 = Date.now();
 
     log('4_LLM_RESPONSE', {
@@ -70,6 +70,7 @@ export async function POST(req: NextRequest) {
         dir: r.compass_direction,
         grid: `${r.grid_row},${r.grid_col}`,
       })),
+      cost_usd: usage.cost_usd,
     });
 
     if (parsedPlan.error === 'not_a_floorplan') {
@@ -88,12 +89,16 @@ export async function POST(req: NextRequest) {
       parsed_floorplan: parsedPlan,
       image_url: imageUrl,
       facing_direction: facingDirection,
-      confidence: parsedPlan.confidence
+      confidence: parsedPlan.confidence,
+      cost: {
+        phase1_parse: usage,
+      }
     };
 
     log('5_RESPONSE', {
       facingDirection_in_response: response.facing_direction,
       totalLatencyMs: Date.now() - t0,
+      cost_usd: usage.cost_usd,
     });
 
     return NextResponse.json(response);

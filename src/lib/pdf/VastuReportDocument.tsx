@@ -1,7 +1,13 @@
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer';
 import type { VastuAnalysis, RoomScore } from '../vastu/types';
 import type { ReportContent } from '../llm/generate-report';
 import type { ParsedRoom } from '../llm/parse-floorplan';
+
+export interface PdfAssets {
+  logoLockup: Buffer;
+  mascot: Buffer;
+  compass: Buffer;
+}
 
 export interface VastuReportProps {
   overallScore: number;
@@ -11,10 +17,12 @@ export interface VastuReportProps {
   vastuAnalysis: VastuAnalysis;
   reportContent: ReportContent | null;
   rooms: ParsedRoom[];
+  assets: PdfAssets;
 }
 
 const C = {
   primary: '#6E1126',
+  primarySoft: '#6E11260F',
   secondary: '#283171',
   good: '#16a34a',
   attention: '#d97706',
@@ -38,7 +46,27 @@ function scoreBg(s: number) { return s >= 80 ? C.bgGood : s >= 50 ? C.bgAttentio
 function scoreLabel(s: number) { return s >= 80 ? 'Well Placed' : s >= 50 ? 'Needs Attention' : 'Vaastu Dosha'; }
 
 const s = StyleSheet.create({
-  page: { padding: 40, fontFamily: 'Helvetica', fontSize: 10, color: C.stone900, backgroundColor: C.white },
+  page: { paddingTop: 56, paddingBottom: 48, paddingHorizontal: 40, fontFamily: 'Helvetica', fontSize: 10, color: C.stone900, backgroundColor: C.white },
+
+  // Running header (every page, fixed)
+  runningHeader: {
+    position: 'absolute', top: 20, left: 40, right: 40,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingBottom: 6, borderBottomWidth: 0.5, borderBottomColor: C.stone200,
+  },
+  headerBrand: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  headerMascot: { width: 14, height: 14 },
+  headerWordmark: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: C.primary, letterSpacing: 1.2 },
+  headerTagline: { fontSize: 6.5, color: C.stone400, letterSpacing: 1.5, textTransform: 'uppercase' },
+
+  // First-page hero brand block
+  hero: { alignItems: 'center', marginBottom: 14 },
+  heroLogo: { width: 130, height: 110, objectFit: 'contain' },
+  heroTagline: { fontSize: 6.5, color: C.primary, letterSpacing: 2, textTransform: 'uppercase', marginTop: 4 },
+
+  // Decorative compass watermark on first page
+  watermark: { position: 'absolute', top: 280, left: 0, right: 0, alignItems: 'center', opacity: 0.04 },
+  watermarkImg: { width: 420, height: 420 },
 
   // Header
   eyebrow: { fontSize: 7, color: C.primary, letterSpacing: 2, textTransform: 'uppercase', textAlign: 'center', marginBottom: 6 },
@@ -59,7 +87,7 @@ const s = StyleSheet.create({
   // Divider
   divider: { flexDirection: 'row', alignItems: 'center', marginVertical: 14 },
   dividerLine: { flex: 1, height: 0.5, backgroundColor: C.stone200 },
-  dividerLabel: { fontSize: 7, color: C.stone400, letterSpacing: 1, textTransform: 'uppercase', marginHorizontal: 8 },
+  dividerLabel: { fontSize: 7, color: C.primary, letterSpacing: 1.5, textTransform: 'uppercase', marginHorizontal: 8, fontFamily: 'Helvetica-Bold' },
 
   // Interpretation
   bodyText: { fontSize: 9, color: C.stone700, lineHeight: 1.6, marginBottom: 12 },
@@ -94,9 +122,18 @@ const s = StyleSheet.create({
   disclaimer: { marginTop: 16, paddingTop: 10, borderTopWidth: 0.5, borderTopColor: C.stone200 },
   disclaimerText: { fontSize: 6.5, color: C.stone400, textAlign: 'center', lineHeight: 1.4 },
 
-  // Page footer
-  pageFooter: { position: 'absolute', bottom: 20, left: 40, right: 40, flexDirection: 'row', justifyContent: 'space-between' },
-  pageFooterText: { fontSize: 6.5, color: C.stone400 },
+  // Page footer (every page, fixed)
+  pageFooter: {
+    position: 'absolute', bottom: 20, left: 40, right: 40,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingTop: 6, borderTopWidth: 0.5, borderTopColor: C.stone200,
+  },
+  footerBrand: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  footerMascot: { width: 11, height: 11 },
+  footerBrandText: { fontSize: 7, fontFamily: 'Helvetica-Bold', color: C.primary, letterSpacing: 0.5 },
+  footerSep: { fontSize: 7, color: C.stone400, marginHorizontal: 4 },
+  footerMeta: { fontSize: 7, color: C.stone500 },
+  footerPage: { fontSize: 7, color: C.stone500, fontFamily: 'Helvetica-Bold' },
 });
 
 const DIR_GRID = [['NW', 'N', 'NE'], ['W', 'CENTER', 'E'], ['SW', 'S', 'SE']];
@@ -175,7 +212,7 @@ function RoomCards({ scores, details }: { scores: RoomScore[]; details?: ReportC
 }
 
 export default function VastuReportDocument({
-  overallScore, grade, facingDirection, createdAt, vastuAnalysis, reportContent, rooms,
+  overallScore, grade, facingDirection, createdAt, vastuAnalysis, reportContent, rooms, assets,
 }: VastuReportProps) {
   const dateStr = new Date(createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
   const gradeColor = scoreColor(overallScore);
@@ -186,8 +223,30 @@ export default function VastuReportDocument({
   const tips = reportContent?.general_tips;
 
   return (
-    <Document>
+    <Document
+      title="Vaastu Compliance Report"
+      author="My Vaastu Pandit"
+      subject="Vaastu Shastra Floor Plan Analysis"
+      creator="My Vaastu Pandit"
+      producer="My Vaastu Pandit"
+    >
       <Page size="A4" style={s.page}>
+        {/* Running header — every page (text-only to keep PDF size small) */}
+        <View style={s.runningHeader} fixed>
+          <Text style={s.headerWordmark}>MY VAASTU PANDIT</Text>
+          <Text style={s.headerTagline}>Analyse · Remedy · Prosper</Text>
+        </View>
+
+        {/* First-page hero brand block */}
+        <View style={s.hero}>
+          <Image src={assets.logoLockup} style={s.heroLogo} />
+        </View>
+
+        {/* Decorative compass watermark — page 1 only */}
+        <View style={s.watermark}>
+          <Image src={assets.compass} style={s.watermarkImg} />
+        </View>
+
         {/* Header — editorial */}
         <Text style={s.eyebrow}>VAASTU COMPLIANCE REPORT</Text>
         <Text style={s.title}>Your Vaastu Analysis</Text>
@@ -212,9 +271,7 @@ export default function VastuReportDocument({
 
         {/* Interpretation */}
         {interpretation && (
-          <>
-            <Text style={s.bodyText}>{interpretation}</Text>
-          </>
+          <Text style={s.bodyText}>{interpretation}</Text>
         )}
 
         {/* Zone Map */}
@@ -284,10 +341,14 @@ export default function VastuReportDocument({
           </Text>
         </View>
 
-        {/* Page footer */}
+        {/* Page footer — every page */}
         <View style={s.pageFooter} fixed>
-          <Text style={s.pageFooterText}>My Vaastu Pandit</Text>
-          <Text style={s.pageFooterText} render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
+          <View style={s.footerBrand}>
+            <Text style={s.footerBrandText}>MY VAASTU PANDIT</Text>
+            <Text style={s.footerSep}>·</Text>
+            <Text style={s.footerMeta}>Vaastu Compliance Report</Text>
+          </View>
+          <Text style={s.footerPage} render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
         </View>
       </Page>
     </Document>

@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Regenerate report in new language
-    const reportContent = await generateReport(analysis.vastu_analysis, language);
+    const { result: reportContent, usage } = await generateReport(analysis.vastu_analysis, language);
 
     // 3. Update stored report
     await supabase
@@ -28,7 +28,10 @@ export async function POST(req: NextRequest) {
       .update({ report_content: reportContent, report_language: language })
       .eq('id', analysis_id);
 
-    return NextResponse.json({ report: reportContent });
+    return NextResponse.json({
+      report: reportContent,
+      cost: usage,
+    });
   } catch (error) {
     console.error('Regenerate report error:', error);
     return NextResponse.json({ error: 'Failed to regenerate report' }, { status: 500 });

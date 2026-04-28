@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
+import { BadgeCheck, ShieldCheck, Zap, FileText } from 'lucide-react';
 import UploadCTA from '@/components/landing/UploadCTA';
 import HowItWorks from '@/components/landing/HowItWorks';
 import TrustSignals from '@/components/landing/TrustSignals';
@@ -60,12 +61,32 @@ export default function LandingPage() {
                 {t('subtitle')}
               </p>
 
-              {/* Quick trust badges - inline */}
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-2 text-xs text-[var(--foreground)]/50">
-                {['100% Free', 'No Sign-up', 'Instant Results', 'PDF Report'].map((item, i) => (
-                  <div key={i} className="flex items-center gap-1.5">
-                    <span className="text-[var(--gold)] text-[8px]">&#9670;</span>
-                    <span>{item}</span>
+              {/* Quick trust badges - on-brand pills */}
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                {[
+                  { icon: BadgeCheck, label: '100% Free',       color: 'var(--gold)' },
+                  { icon: ShieldCheck, label: 'No Sign-up',     color: 'var(--secondary)' },
+                  { icon: Zap, label: 'Instant Results',        color: 'var(--primary)' },
+                  { icon: FileText, label: 'PDF Report',        color: 'var(--gold)' },
+                ].map(({ icon: Icon, label, color }) => (
+                  <div
+                    key={label}
+                    className="group flex items-center gap-1.5 backdrop-blur-sm border rounded-full pl-1.5 pr-3 py-1 hover:shadow-sm transition-all bg-white/70 hover:bg-white"
+                    style={{
+                      borderColor: `color-mix(in srgb, ${color} 35%, transparent)`,
+                    }}
+                  >
+                    <span
+                      className="w-5 h-5 rounded-full flex items-center justify-center transition-colors"
+                      style={{
+                        backgroundColor: `color-mix(in srgb, ${color} 18%, transparent)`,
+                      }}
+                    >
+                      <Icon className="w-2.5 h-2.5" strokeWidth={2.5} style={{ color }} />
+                    </span>
+                    <span className="text-[11px] font-semibold text-[var(--foreground)]/80 tracking-wide">
+                      {label}
+                    </span>
                   </div>
                 ))}
               </div>

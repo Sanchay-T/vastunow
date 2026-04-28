@@ -1,6 +1,6 @@
-import { InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
-import { bedrock } from './bedrock-client';
+import { anthropic } from './bedrock-client';
 import { REPORT_GENERATION_PROMPT } from './prompts';
+import { calculateCost, type TokenUsage } from './cost-tracker';
 import type { VastuAnalysis } from '../vastu/types';
 
 export interface ReportRoomDetail {
@@ -20,7 +20,7 @@ export interface ReportContent {
 }
 
 const reportTool = {
-  name: 'generate_report',
+  name: 'generate_report' as const,
   description: 'Output the Vastu report as structured JSON',
   input_schema: {
     type: 'object' as const,
@@ -48,39 +48,38 @@ const reportTool = {
   }
 };
 
+const MODEL = 'claude-haiku-4-5-20251001';
+
 export async function generateReport(
   analysis: VastuAnalysis,
   language: string = 'English'
-): Promise<ReportContent> {
+): Promise<{ result: ReportContent; usage: TokenUsage }> {
   const prompt = REPORT_GENERATION_PROMPT.replace('{language}', language);
 
-  const payload = {
-    anthropic_version: 'bedrock-2023-05-31',
+  const response = await anthropic.messages.create({
+    model: MODEL,
     max_tokens: 3000,
     temperature: 0.4,
     system: prompt,
     tools: [reportTool],
-    tool_choice: { type: 'tool' as const, name: 'generate_report' },
+    tool_choice: { type: 'tool', name: 'generate_report' },
     messages: [
       {
         role: 'user',
         content: `Here is the Vastu analysis data:\n${JSON.stringify(analysis, null, 2)}`
       }
     ]
-  };
-
-  const command = new InvokeModelCommand({
-    modelId: 'us.anthropic.claude-haiku-4-5-20251001-v1:0',
-    contentType: 'application/json',
-    accept: 'application/json',
-    body: JSON.stringify(payload)
   });
 
-  const response = await bedrock.send(command);
-  const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+  const usage = calculateCost(MODEL, response.usage.input_tokens, response.usage.output_tokens);
 
-  const toolUseBlock = responseBody.content.find(
-    (block: { type: string }) => block.type === 'tool_use'
+  const toolUseBlock = response.content.find(
+    (block) => block.type === 'tool_use'
   );
-  return toolUseBlock.input as ReportContent;
+
+  if (!toolUseBlock || toolUseBlock.type !== 'tool_use') {
+    throw new Error('LLM did not return a tool_use block for report generation');
+  }
+
+  return { result: toolUseBlock.input as ReportContent, usage };
 }

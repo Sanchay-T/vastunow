@@ -9,8 +9,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Allow server-side usage of AWS SDK
-  serverExternalPackages: ['@aws-sdk/client-bedrock-runtime'],
+  // Allow server-side usage of Anthropic SDK
+  serverExternalPackages: ['@anthropic-ai/sdk'],
 };
 
 export default nextConfig;

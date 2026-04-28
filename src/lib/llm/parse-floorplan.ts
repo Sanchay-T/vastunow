@@ -1,6 +1,15 @@
-import { InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
-import { bedrock } from './bedrock-client';
+import { anthropic } from './bedrock-client';
 import { FLOORPLAN_PARSE_PROMPT } from './prompts';
+import { calculateCost, type TokenUsage } from './cost-tracker';
+
+function detectImageType(base64: string): string {
+  const header = base64.substring(0, 20);
+  if (header.startsWith('/9j/')) return 'image/jpeg';
+  if (header.startsWith('iVBOR')) return 'image/png';
+  if (header.startsWith('R0lG')) return 'image/gif';
+  if (header.startsWith('UklGR')) return 'image/webp';
+  return 'image/jpeg'; // fallback
+}
 
 export type Direction = 'N' | 'NE' | 'E' | 'SE' | 'S' | 'SW' | 'W' | 'NW' | 'CENTER';
 
@@ -13,6 +22,10 @@ export interface ParsedRoom {
   size: 'small' | 'medium' | 'large';
   has_window: boolean;
   has_door: boolean;
+  pos_x_pct?: number;
+  pos_y_pct?: number;
+  bbox?: { x: number; y: number; w: number; h: number };
+  user_added?: boolean;
 }
 
 export interface ParsedFloorPlan {
@@ -31,7 +44,7 @@ export interface ParsedFloorPlan {
 }
 
 const floorPlanTool = {
-  name: 'parse_floorplan',
+  name: 'parse_floorplan' as const,
   description: 'Output the parsed floor plan data as structured JSON',
   input_schema: {
     type: 'object' as const,
@@ -73,22 +86,23 @@ const floorPlanTool = {
   }
 };
 
+const MODEL = 'claude-sonnet-4-20250514';
+
 export async function parseFloorPlan(
   fileBase64: string,
   facingDirection: string,
   isPdf: boolean = false
-): Promise<ParsedFloorPlan> {
+): Promise<{ result: ParsedFloorPlan; usage: TokenUsage }> {
   const t0 = Date.now();
   const log = (step: string, data?: Record<string, unknown>) =>
     console.log(`[LLM_PARSE] ${step}`, data ? JSON.stringify(data) : '');
 
-  // Build prompt with direction substituted
   const prompt = FLOORPLAN_PARSE_PROMPT.replace('{facing_direction}', facingDirection);
 
   log('1_PROMPT_BUILT', {
     facingDirection_input: facingDirection,
     facingDirection_inPrompt: prompt.includes(`faces ${facingDirection}`),
-    promptFirstLine: prompt.split('\n')[1], // "The homeowner has indicated that their main door faces X."
+    promptFirstLine: prompt.split('\n')[1],
     isPdf,
     imageBase64Length: fileBase64.length,
   });
@@ -106,17 +120,26 @@ export async function parseFloorPlan(
         type: 'image' as const,
         source: {
           type: 'base64' as const,
-          media_type: 'image/jpeg' as const,
+          media_type: detectImageType(fileBase64) as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
           data: fileBase64
         }
       };
 
-  const payload = {
-    anthropic_version: 'bedrock-2023-05-31',
+  log('2_API_CALL', {
+    model: MODEL,
+    temperature: 0.1,
+    maxTokens: 2000,
+    toolChoice: 'parse_floorplan',
+    contentBlocks: 2,
+    textBlockPreview: prompt.substring(0, 120),
+  });
+
+  const response = await anthropic.messages.create({
+    model: MODEL,
     max_tokens: 2000,
     temperature: 0.1,
     tools: [floorPlanTool],
-    tool_choice: { type: 'tool' as const, name: 'parse_floorplan' },
+    tool_choice: { type: 'tool', name: 'parse_floorplan' },
     messages: [
       {
         role: 'user',
@@ -126,43 +149,27 @@ export async function parseFloorPlan(
         ]
       }
     ]
-  };
-
-  log('2_BEDROCK_CALL', {
-    model: 'us.anthropic.claude-sonnet-4-6',
-    temperature: 0.1,
-    maxTokens: 2000,
-    toolChoice: 'parse_floorplan',
-    contentBlocks: 2,
-    textBlockPreview: prompt.substring(0, 120),
   });
 
-  const command = new InvokeModelCommand({
-    modelId: 'us.anthropic.claude-sonnet-4-6',
-    contentType: 'application/json',
-    accept: 'application/json',
-    body: JSON.stringify(payload)
-  });
+  const usage = calculateCost(MODEL, response.usage.input_tokens, response.usage.output_tokens);
 
-  const response = await bedrock.send(command);
-  const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-
-  log('3_BEDROCK_RESPONSE', {
+  log('3_API_RESPONSE', {
     latencyMs: Date.now() - t0,
-    stopReason: responseBody.stop_reason,
-    contentBlockCount: responseBody.content?.length,
-    contentTypes: responseBody.content?.map((b: { type: string }) => b.type),
-    inputTokens: responseBody.usage?.input_tokens,
-    outputTokens: responseBody.usage?.output_tokens,
+    stopReason: response.stop_reason,
+    contentBlockCount: response.content?.length,
+    contentTypes: response.content?.map(b => b.type),
+    inputTokens: response.usage.input_tokens,
+    outputTokens: response.usage.output_tokens,
+    cost_usd: usage.cost_usd,
   });
 
-  const toolUseBlock = responseBody.content.find(
-    (block: { type: string }) => block.type === 'tool_use'
+  const toolUseBlock = response.content.find(
+    (block) => block.type === 'tool_use'
   );
 
-  if (!toolUseBlock) {
+  if (!toolUseBlock || toolUseBlock.type !== 'tool_use') {
     log('3_ERROR_NO_TOOL_USE', {
-      fullResponse: JSON.stringify(responseBody).substring(0, 500),
+      fullResponse: JSON.stringify(response.content).substring(0, 500),
     });
     throw new Error('LLM did not return a tool_use block');
   }
@@ -178,5 +185,5 @@ export async function parseFloorPlan(
     roomDirections: result.rooms?.map(r => `${r.name}=${r.compass_direction}`),
   });
 
-  return result;
+  return { result, usage };
 }

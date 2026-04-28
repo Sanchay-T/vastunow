@@ -1,5 +1,5 @@
-import { BedrockRuntimeClient } from '@aws-sdk/client-bedrock-runtime';
+import Anthropic from '@anthropic-ai/sdk';
 
-export const bedrock = new BedrockRuntimeClient({
-  region: (process.env.AWS_REGION || 'us-east-1').trim(),
+export const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });

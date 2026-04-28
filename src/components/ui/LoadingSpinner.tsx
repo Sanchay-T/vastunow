@@ -41,11 +41,12 @@ export default function LoadingSpinner({ step = 1 }: LoadingSpinnerProps) {
         className="mb-4 sm:mb-6"
       >
         <Image
-          src="/images/mascot.png"
+          src="/images/logo-full-maroon.png"
           alt="My Vaastu Pandit"
-          width={100}
-          height={100}
-          className="w-20 h-20 sm:w-24 sm:h-24 object-contain"
+          width={160}
+          height={160}
+          priority
+          className="w-32 h-32 sm:w-40 sm:h-40 object-contain"
         />
       </motion.div>
 
