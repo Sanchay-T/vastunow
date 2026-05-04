@@ -33,7 +33,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
+      <body className={`${montserrat.variable} ${playfairDisplay.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}>
+        <ClientProviders>
+          {children}
+        </ClientProviders>
         <Script id="ms-clarity" strategy="afterInteractive">
           {`
             (function(c,l,a,r,i,t,y){
@@ -43,11 +46,6 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "wlto1f2a94");
           `}
         </Script>
-      </head>
-      <body className={`${montserrat.variable} ${playfairDisplay.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}>
-        <ClientProviders>
-          {children}
-        </ClientProviders>
       </body>
     </html>
   );
