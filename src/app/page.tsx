@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { BadgeCheck, ShieldCheck, Zap, FileText } from 'lucide-react';
 import UploadCTA from '@/components/landing/UploadCTA';
@@ -232,6 +233,18 @@ export default function LandingPage() {
                   {link}
                 </span>
               ))}
+              <Link
+                href="/terms"
+                className="text-white/50 hover:text-white text-sm transition-colors"
+              >
+                Terms &amp; Conditions
+              </Link>
+              <Link
+                href="/privacy"
+                className="text-white/50 hover:text-white text-sm transition-colors"
+              >
+                Privacy Policy
+              </Link>
             </div>
 
             {/* Right — Knowledge */}
@@ -257,9 +270,20 @@ export default function LandingPage() {
             <p className="text-[11px] text-white/30 max-w-md leading-5 text-center sm:text-left">
               {t('disclaimer')}
             </p>
-            <p className="text-[11px] text-white/30 shrink-0">
-              &copy; {new Date().getFullYear()} My Vaastu Pandit. All rights reserved.
-            </p>
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 shrink-0">
+              <div className="flex items-center gap-3 text-[11px]">
+                <Link href="/terms" className="text-white/40 hover:text-white/80 transition-colors">
+                  Terms
+                </Link>
+                <span className="text-white/20">·</span>
+                <Link href="/privacy" className="text-white/40 hover:text-white/80 transition-colors">
+                  Privacy
+                </Link>
+              </div>
+              <p className="text-[11px] text-white/30">
+                &copy; {new Date().getFullYear()} My Vaastu Pandit. All rights reserved.
+              </p>
+            </div>
           </div>
         </div>
       </footer>
