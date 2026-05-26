@@ -9,6 +9,7 @@ import RoomReviewGrid from '@/components/review/RoomReviewGrid';
 import EntranceConfirm from '@/components/review/EntranceConfirm';
 import ProgressStepper from '@/components/ui/ProgressStepper';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { track } from '@/lib/analytics/posthog';
 
 interface VastuSessionData {
   parsed_floorplan: ParsedFloorPlan;
@@ -83,6 +84,15 @@ export default function ReviewPage() {
     setLoading(true);
     setLoadingStep(1);
 
+    const startedAt = Date.now();
+    track('report_generation_started', {
+      skip_review: skipReview,
+      entrance_confirmed: entranceConfirmed,
+      room_count: skipReview ? data.parsed_floorplan.rooms.length : rooms.length,
+      facing_direction: data.facing_direction,
+      language: i18n.language,
+    });
+
     try {
       const finalRooms = skipReview ? data.parsed_floorplan.rooms : rooms;
       const finalPlan = {
@@ -108,9 +118,25 @@ export default function ReviewPage() {
       const result = await res.json();
       if (!res.ok) throw new Error(result.error);
 
+      track('report_generated', {
+        analysis_id: result.id,
+        overall_score: result.overall_score,
+        grade: result.grade,
+        room_count: finalRooms.length,
+        skip_review: skipReview,
+        facing_direction: data.facing_direction,
+        language: i18n.language,
+        duration_ms: Date.now() - startedAt,
+      });
+
       sessionStorage.setItem('vastuResult', JSON.stringify(result));
       router.push(`/report/${result.id}`);
     } catch (error) {
+      track('report_generation_failed', {
+        error: error instanceof Error ? error.message : 'unknown',
+        skip_review: skipReview,
+        duration_ms: Date.now() - startedAt,
+      });
       console.error('Scoring failed:', error);
       alert(t('error_generic'));
     } finally {

@@ -13,6 +13,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import type { RoomScore } from '@/lib/vastu/types';
 import type { ReportContent } from '@/lib/llm/generate-report';
 import type { ParsedRoom } from '@/lib/llm/parse-floorplan';
+import { track } from '@/lib/analytics/posthog';
 
 interface AnalysisResult {
   id: string;
@@ -51,6 +52,12 @@ export default function ReportPage() {
       if (parsed.id === params.id) {
         setResult(parsed);
         setLoading(false);
+        track('report_viewed', {
+          analysis_id: parsed.id,
+          overall_score: parsed.overall_score,
+          grade: parsed.grade,
+          source: 'session_storage',
+        });
         return;
       }
     }
@@ -75,6 +82,12 @@ export default function ReportPage() {
               scores: data.analysis.vastu_analysis.room_scores
             }
           });
+          track('report_viewed', {
+            analysis_id: data.analysis.id,
+            overall_score: data.analysis.overall_score,
+            grade: data.analysis.grade,
+            source: 'direct_load',
+          });
         }
       })
       .catch(console.error)
@@ -84,6 +97,10 @@ export default function ReportPage() {
   const handleLanguageChange = useCallback(async (lang: string) => {
     if (!result) return;
     setRegenerating(true);
+    track('report_language_changed', {
+      analysis_id: result.id,
+      to_language: lang,
+    });
     try {
       const languageMap: Record<string, string> = { en: 'English', hi: 'Hindi' };
       const res = await fetch('/api/regenerate-report', {
@@ -230,7 +247,14 @@ export default function ReportPage() {
           <div className="max-w-2xl mx-auto px-3 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center gap-2 sm:gap-3">
             {/* Primary: Download PDF */}
             <button
-              onClick={() => window.open(`/api/report-pdf?id=${result.id}`, '_blank')}
+              onClick={() => {
+                track('report_pdf_downloaded', {
+                  analysis_id: result.id,
+                  overall_score: result.overall_score,
+                  grade: result.grade,
+                });
+                window.open(`/api/report-pdf?id=${result.id}`, '_blank');
+              }}
               className="flex-1 min-w-[140px] flex items-center justify-center gap-2 bg-[var(--secondary)] hover:bg-[#1e2860] text-white font-medium text-sm py-3 px-4 sm:px-5 rounded-lg transition-colors min-h-[48px]"
             >
               <Download className="w-4 h-4 flex-shrink-0" />
@@ -239,7 +263,10 @@ export default function ReportPage() {
 
             {/* Secondary: Analyze Another */}
             <button
-              onClick={() => window.location.href = '/'}
+              onClick={() => {
+                track('analyze_another_clicked', { analysis_id: result.id });
+                window.location.href = '/';
+              }}
               className="flex-1 min-w-[120px] flex items-center justify-center gap-1.5 text-sm font-medium text-stone-500 hover:text-[var(--primary)] py-3 px-3 sm:px-4 rounded-lg hover:bg-stone-50 transition-colors min-h-[48px]"
             >
               <span className="truncate">{t('analyze_another')}</span>

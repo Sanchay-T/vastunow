@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowRight, Shield, X, Compass } from 'lucide-react';
 import FileUpload from '@/components/ui/FileUpload';
 import CompassSelector from '@/components/ui/CompassSelector';
+import { track } from '@/lib/analytics/posthog';
 
 export default function UploadCTA() {
   const { t } = useTranslation();
@@ -50,6 +51,14 @@ export default function UploadCTA() {
     setLoading(true);
     setError(null);
 
+    const startedAt = Date.now();
+    track('analyze_started', {
+      source: 'landing',
+      facing_direction: direction,
+      file_size_kb: Math.round(file.size / 1024),
+      file_type: file.type,
+    });
+
     try {
       const formData = new FormData();
       formData.append('floorplan', file);
@@ -72,13 +81,32 @@ export default function UploadCTA() {
       });
 
       if (!res.ok) {
+        track('analyze_failed', {
+          source: 'landing',
+          status: res.status,
+          error: data.error,
+          duration_ms: Date.now() - startedAt,
+        });
         setError(data.error || t('error_generic'));
         return;
       }
 
+      track('analyze_completed', {
+        source: 'landing',
+        facing_direction: data.facing_direction,
+        confidence: data.confidence,
+        room_count: data.parsed_floorplan?.rooms?.length,
+        duration_ms: Date.now() - startedAt,
+      });
+
       sessionStorage.setItem('vastuData', JSON.stringify(data));
       router.push('/review');
-    } catch {
+    } catch (err) {
+      track('analyze_failed', {
+        source: 'landing',
+        error: err instanceof Error ? err.message : 'unknown',
+        duration_ms: Date.now() - startedAt,
+      });
       setError(t('error_generic'));
     } finally {
       setLoading(false);

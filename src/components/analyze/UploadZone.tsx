@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import FileUpload from '@/components/ui/FileUpload';
 import Button from '@/components/ui/Button';
 import CompassSelector from '@/components/ui/CompassSelector';
+import { track } from '@/lib/analytics/posthog';
 
 export default function UploadZone() {
   const { t } = useTranslation();
@@ -20,6 +21,14 @@ export default function UploadZone() {
     setLoading(true);
     setError(null);
 
+    const startedAt = Date.now();
+    track('analyze_started', {
+      source: 'analyze_page',
+      facing_direction: direction,
+      file_size_kb: Math.round(file.size / 1024),
+      file_type: file.type,
+    });
+
     try {
       const formData = new FormData();
       formData.append('floorplan', file);
@@ -29,13 +38,32 @@ export default function UploadZone() {
       const data = await res.json();
 
       if (!res.ok) {
+        track('analyze_failed', {
+          source: 'analyze_page',
+          status: res.status,
+          error: data.error,
+          duration_ms: Date.now() - startedAt,
+        });
         setError(data.error || t('error_generic'));
         return;
       }
 
+      track('analyze_completed', {
+        source: 'analyze_page',
+        facing_direction: data.facing_direction,
+        confidence: data.confidence,
+        room_count: data.parsed_floorplan?.rooms?.length,
+        duration_ms: Date.now() - startedAt,
+      });
+
       sessionStorage.setItem('vastuData', JSON.stringify(data));
       router.push('/review');
-    } catch {
+    } catch (err) {
+      track('analyze_failed', {
+        source: 'analyze_page',
+        error: err instanceof Error ? err.message : 'unknown',
+        duration_ms: Date.now() - startedAt,
+      });
       setError(t('error_generic'));
     } finally {
       setLoading(false);
