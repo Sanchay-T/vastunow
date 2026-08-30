@@ -1,0 +1,68 @@
+{
+  "expo": {
+    "name": "My Vaastu Pandit",
+    "slug": "my-vaastu-pandit",
+    "version": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/dcce7a5f-b838-49ed-8d60-156dcb83bca7"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vaastunow.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png",
+        "backgroundColor": "#6E1126"
+      },
+      "package": "com.vaastunow.app",
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA"
+      ]
+    },
+    "scheme": "myvaastupandit",
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#6E1126"
+        }
+      ],
+      "expo-status-bar",
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to upload floor plans.",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to use your camera to take photos of floor plans."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "dcce7a5f-b838-49ed-8d60-156dcb83bca7"
+      }
+    },
+    "owner": "poojanvig"
+  }
+}

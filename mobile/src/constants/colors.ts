@@ -1,0 +1,25 @@
+export const COLORS = {
+  primary: '#6E1126',
+  'primary-light': '#8a1a33',
+  secondary: '#283171',
+  background: '#F3EFE6',
+  foreground: '#2d2926',
+  accent: '#714B9D',
+  gold: '#EA9C33',
+  coral: '#EE4731',
+  'score-good': '#22c55e',
+  'score-attention': '#f59e0b',
+  'score-problem': '#ef4444',
+  cardBg: '#ffffff',
+  border: '#e0dbd4',
+  gray100: '#f3f4f6',
+  gray200: '#e5e7eb',
+  gray300: '#d1d5db',
+  gray400: '#9ca3af',
+  gray500: '#6b7280',
+  gray600: '#4b5563',
+  white: '#ffffff',
+  black: '#000000',
+};
+
+export type ColorKey = keyof typeof COLORS;
